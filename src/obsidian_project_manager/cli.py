@@ -1,4 +1,5 @@
 import argparse
+from typing import List
 from .config import ConfigManager
 from .project import Project
 
@@ -31,6 +32,8 @@ def configure_parser(parser: argparse.ArgumentParser) -> None:
     
     continue_parser = project_subparsers.add_parser("continue")
     continue_parser.add_argument("path")
+    
+    sync_parser = project_subparsers.add_parser("sync")
 
 def main() -> None:
     """Main CLI entry point."""
@@ -73,6 +76,14 @@ def main() -> None:
             elif args.action.startswith("continue"):
                 success, error = project.continue_(args.path)
                 print(error if error else f"Continued {args.path}")
+            elif args.action == "sync":
+                success, warnings = project.sync()
+                if warnings:
+                    print("Warnings found during sync:")
+                    for warning in warnings:
+                        print(f"- {warning}")
+                else:
+                    print("Project structure synced successfully")
         except ValueError as e:
             print(str(e))
 

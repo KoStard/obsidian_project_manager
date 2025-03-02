@@ -65,6 +65,30 @@ class FileManager:
         return True, None
     
     @staticmethod
+    def remove_empty_folders(path: Path, protected_paths: List[Path] = None) -> bool:
+        """Recursively remove empty folders, going up the tree."""
+        if not path.exists() or not path.is_dir():
+            return False
+            
+        # Don't delete protected folders
+        if protected_paths and any(path.samefile(p) for p in protected_paths if p.exists()):
+            return False
+            
+        # Check if folder is empty
+        if any(path.iterdir()):
+            return False
+            
+        # Remove the empty folder
+        try:
+            path.rmdir()
+            # Try to remove parent if it's now empty
+            parent = path.parent
+            FileManager.remove_empty_folders(parent, protected_paths)
+            return True
+        except OSError:
+            return False
+    
+    @staticmethod
     def check_conflicts(path: Path, structure: Dict[str, List[str]]) -> List[str]:
         """Check for file/folder conflicts."""
         conflicts = []

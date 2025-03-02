@@ -86,6 +86,7 @@ If there are folder name matches (ignoring the indices) between the incoming and
 If there are **file** name matches, fail. Do dry run before moving anything to make sure this issue won't happen after moving some files.
 The indices of the subfolders across the project should always be continuously increasing. In case we are moving a subfolder into another state (here to finished), and it's creating a gap in the index flow, decrease the indices of the next subfolders to fix that.
 e.g. if subfolders are 1 - first, 2 - second, 3 - third, and we finish the `2 - second`, the indices should automatically refresh to `1 - finish`, `2 - third`.
+If during moves any folder becomes empty, it should be removed (recursively go up during the checks).
 
 2. `obsidian_project_manager project <project_alias> continue Project/Subproject/.../FinalFolder`
 Move this from finished to current.

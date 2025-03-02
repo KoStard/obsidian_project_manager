@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from .folder_manager import FolderManager
 from .config import ConfigManager
 
@@ -36,3 +36,7 @@ class Project:
             self.folder_manager.finished_folder,
             self.folder_manager.current_folder
         )
+        
+    def sync(self) -> Tuple[bool, List[str]]:
+        """Sync project structure, fix indices, and check for conflicts."""
+        return self.folder_manager.sync()
