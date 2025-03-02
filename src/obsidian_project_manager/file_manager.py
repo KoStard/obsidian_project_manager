@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List, Tuple, Optional, Dict
 import os
 import shutil
+import re
 
 class FileManager:
     """Handles low-level file system operations and index management."""
@@ -10,10 +11,16 @@ class FileManager:
     
     @staticmethod
     def strip_index(name: str) -> str:
-        """Remove index prefix from a name if it exists."""
-        if name.startswith(tuple(f"{i} - " for i in range(10))):
-            return name.split(" - ", 1)[1]
-        return name
+        """Remove index prefix from a name if it exists.
+        
+        Args:
+            name: The name with potential index prefix
+            
+        Returns:
+            The name without the index prefix
+        """
+        match = re.match(r'^\d+\s*-\s*(.*)', name)
+        return match.group(1) if match else name
     
     @staticmethod
     def add_index(name: str, index: int) -> str:
