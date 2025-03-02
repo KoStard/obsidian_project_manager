@@ -79,6 +79,8 @@ If the user has entered the path as `1 - Project/4 - Subproject/...`, first remo
 
 While going through the folders, if you find any subfolders that don't have indices specified, ask the user for confirmation (Yes/No (these one by one)/All (this approving current and all future of the session)) and rename them to add indices.
 
+When creating the leaf folder, add an "Entry.md" file there to add to git.
+
 2. `obsidian_project_manager project <project_alias> finish Project/Subproject/.../FinalFolder`
 Move this folder structure from the Current to Finished folder.
 Ignore the indices of the "incoming" (from Current), do from scratch. Indices of course apply only to folders, not files.

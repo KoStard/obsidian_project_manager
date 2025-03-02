@@ -39,7 +39,16 @@ class FolderManager:
         target_path = self._build_indexed_path(base_folder, folders)
         
         success = self.file_manager.create_folder(target_path)
-        return success, None if success else f"Failed to create folder {target_path}"
+        if success:
+            # Create Entry.md file in the leaf folder
+            entry_file = target_path / "Entry.md"
+            try:
+                with open(entry_file, "w") as f:
+                    f.write(f"# {folders[-1]}\n\nEntry file for {'/'.join(folders)}")
+                return True, None
+            except Exception as e:
+                return False, f"Created folder but failed to create Entry.md: {str(e)}"
+        return False, f"Failed to create folder {target_path}"
     
     def move_folder(self, path: str, source_base: Path, dest_base: Path) -> Tuple[bool, Optional[str]]:
         """Move folder between project states with merging."""
