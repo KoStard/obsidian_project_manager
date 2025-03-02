@@ -99,9 +99,11 @@ Alarm in case there are path+filename (ignoring indices) conflicts between finis
 Alarm in case there are path+foldername (ignoring indices) conflicts within one project state (finished or current). Meaning, in same folder there can't be multiple subfolders with same name but different indices.
 Alarm in case there are path+filename (ignoring indices) conflicts within one folder. Meaning there can't be multiple files in any folder with same name but different indices.
 
-4. `obsidian_project_manager project <project_alias> change_index Project/Subproject/.../FinalFolder new_index`
+4. `obsidian_project_manager project <project_alias> change_index {Current,Finished}/Project/Subproject/.../FinalFolder new_index`
 As every subfolder has a unique index (starting with 1) in that folder, we might want to change that index to change ordering.
 First we should verify if the index is out of bounds or not (e.g. if there are 3 folders, the index can't be 4, or 0, or negative).
 
 Gaps should be filled through decreasing the higher folders indices, starting from the gap+1, until highest index.
 The index conflicts should be resolved through increase of the indices starting from the conflicted, until the highest index.
+
+As same folder-structure might be present both in current and in finished, we need to specify the stage as well in the path.

@@ -40,3 +40,7 @@ class Project:
     def sync(self) -> Tuple[bool, List[str]]:
         """Sync project structure, fix indices, and check for conflicts."""
         return self.folder_manager.sync()
+        
+    def change_index(self, path: str, new_index: int) -> Tuple[bool, Optional[str]]:
+        """Change the index of a folder within its parent directory."""
+        return self.folder_manager.change_index(path, new_index)

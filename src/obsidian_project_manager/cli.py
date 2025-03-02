@@ -34,6 +34,10 @@ def configure_parser(parser: argparse.ArgumentParser) -> None:
     continue_parser.add_argument("path")
     
     sync_parser = project_subparsers.add_parser("sync")
+    
+    change_index_parser = project_subparsers.add_parser("change_index")
+    change_index_parser.add_argument("path")
+    change_index_parser.add_argument("new_index", type=int)
 
 def main() -> None:
     """Main CLI entry point."""
@@ -84,6 +88,9 @@ def main() -> None:
                         print(f"- {warning}")
                 else:
                     print("Project structure synced successfully")
+            elif args.action == "change_index":
+                success, error = project.change_index(args.path, args.new_index)
+                print(error if error else f"Changed index of {args.path} to {args.new_index}")
         except ValueError as e:
             print(str(e))
 

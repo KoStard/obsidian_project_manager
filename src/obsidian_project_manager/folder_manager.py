@@ -90,6 +90,64 @@ class FolderManager:
             if path.name != new_name:
                 path.rename(folder / new_name)
     
+    def change_index(self, path: str, new_index: int) -> Tuple[bool, Optional[str]]:
+        """Change the index of a folder within its parent directory."""
+        folders = self._normalize_path(path)
+        if not folders:
+            return False, "Invalid path"
+            
+        # Get parent folder and target folder
+        parent_path = self._build_indexed_path(self.parent_dir, folders[:-1])
+        target_name = folders[-1]
+        
+        # Get all folders in parent
+        folders_in_parent = []
+        for item in parent_path.iterdir():
+            if item.is_dir():
+                name = self.file_manager.strip_index(item.name)
+                current_index = int(item.name.split(" - ")[0])
+                folders_in_parent.append((name, item, current_index))
+                
+        folder_count = len(folders_in_parent)
+        
+        # Validate new index
+        if new_index < 1 or new_index > folder_count:
+            return False, f"Index must be between 1 and {folder_count}"
+            
+        # Find the target folder
+        target_folder = None
+        target_current_index = None
+        for name, path, idx in folders_in_parent:
+            if name == target_name:
+                target_folder = path
+                target_current_index = idx
+                break
+                
+        if not target_folder:
+            return False, f"Folder {target_name} not found in {parent_path}"
+            
+        # If index isn't changing, nothing to do
+        if target_current_index == new_index:
+            return True, None
+            
+        # Sort folders by their current indices
+        folders_in_parent.sort(key=lambda x: x[2])
+        
+        # Remove target from the list
+        folders_in_parent = [(name, path, idx) for name, path, idx in folders_in_parent 
+                            if name != target_name]
+        
+        # Insert target at the new position
+        folders_in_parent.insert(new_index - 1, (target_name, target_folder, target_current_index))
+        
+        # Rename all folders with new indices
+        for i, (name, path, _) in enumerate(folders_in_parent, 1):
+            new_name = self.file_manager.add_index(name, i)
+            if path.name != new_name:
+                path.rename(parent_path / new_name)
+                
+        return True, None
+    
     def sync(self) -> Tuple[bool, List[str]]:
         """Sync project structure, fix indices, and check for conflicts."""
         warnings = []
