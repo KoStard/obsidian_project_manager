@@ -65,8 +65,8 @@ def main() -> None:
             project_alias = args.project.split()[0]
             project = Project(project_alias, config_manager)
             if args.action.startswith("add"):
-                project.add(args.path)
-                print(f"Added {args.path}")
+                success, error = project.add(args.path)
+                print(error if error else f"Added {args.path}")
             elif args.action.startswith("finish"):
                 success, error = project.finish(args.path)
                 print(error if error else f"Finished {args.path}")

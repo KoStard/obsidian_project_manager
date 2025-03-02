@@ -44,9 +44,9 @@ This tool will be used from CLI.
 ## Concepts
 ### Projects
 All project commands are executed by specifying for which project is this done:
-`obsidian_project_manager <project_alias>`, which is configured through `obsidian_project_manager configure projects` as discussed later. With this information, we know where the PARENT_DIRECTORY is located, and the names of the finished and current folder names (with defaults as shown above).
+`obsidian_project_manager project <project_alias>`, which is configured through `obsidian_project_manager configure projects` as discussed later. With this information, we know where the PARENT_DIRECTORY is located, and the names of the finished and current folder names (with defaults as shown above).
 
-So `obsidian_project_manager <project_alias>` commands can be run from any working directory, the project path will be taken from the config, not the current working directory.
+So `obsidian_project_manager project <project_alias>` commands can be run from any working directory, the project path will be taken from the config, not the current working directory.
 
 ### Project Structure
 The internal representation of the project has no indices in the folder names.
@@ -67,7 +67,7 @@ Interactively asks for the details to register a new project. Saves in the confi
 3. `obsidian_project_manager configure projects delete <project_alias>`
 
 #### Projects
-1. `obsidian_project_manager <project_alias> add Project/Subproject/.../FinalFolder`
+1. `obsidian_project_manager project <project_alias> add Project/Subproject/.../FinalFolder`
 Add new folder structure in `Current` folder of the project.
 In one given folder there can be only one subfolder with any given index.
 All subfolders should have indices.
@@ -79,7 +79,7 @@ If the user has entered the path as `1 - Project/4 - Subproject/...`, first remo
 
 While going through the folders, if you find any subfolders that don't have indices specified, ask the user for confirmation (Yes/No (these one by one)/All (this approving current and all future of the session)) and rename them to add indices.
 
-2. `obsidian_project_manager <project_alias> finish Project/Subproject/.../FinalFolder`
+2. `obsidian_project_manager project <project_alias> finish Project/Subproject/.../FinalFolder`
 Move this folder structure from the Current to Finished folder.
 Ignore the indices of the "incoming" (from Current), do from scratch. Indices of course apply only to folders, not files.
 If there are folder name matches (ignoring the indices) between the incoming and finished folders, merge the contents.
@@ -87,18 +87,18 @@ If there are **file** name matches, fail. Do dry run before moving anything to m
 The indices of the subfolders across the project should always be continuously increasing. In case we are moving a subfolder into another state (here to finished), and it's creating a gap in the index flow, decrease the indices of the next subfolders to fix that.
 e.g. if subfolders are 1 - first, 2 - second, 3 - third, and we finish the `2 - second`, the indices should automatically refresh to `1 - finish`, `2 - third`.
 
-2. `obsidian_project_manager <project_alias> continue Project/Subproject/.../FinalFolder`
+2. `obsidian_project_manager project <project_alias> continue Project/Subproject/.../FinalFolder`
 Move this from finished to current.
 Ignore indices.
 If folder name conflicts arise, merge, same as in `finish`.
 
-3. `obsidian_project_manager <project_alias> sync`
+3. `obsidian_project_manager project <project_alias> sync`
 Fix the indices of the project if anything is missing or wrong.
 Alarm in case there are path+filename (ignoring indices) conflicts between finished and current folders.
 Alarm in case there are path+foldername (ignoring indices) conflicts within one project state (finished or current). Meaning, in same folder there can't be multiple subfolders with same name but different indices.
 Alarm in case there are path+filename (ignoring indices) conflicts within one folder. Meaning there can't be multiple files in any folder with same name but different indices.
 
-4. `obsidian_project_manager <project_alias> change_index Project/Subproject/.../FinalFolder new_index`
+4. `obsidian_project_manager project <project_alias> change_index Project/Subproject/.../FinalFolder new_index`
 As every subfolder has a unique index (starting with 1) in that folder, we might want to change that index to change ordering.
 First we should verify if the index is out of bounds or not (e.g. if there are 3 folders, the index can't be 4, or 0, or negative).
 

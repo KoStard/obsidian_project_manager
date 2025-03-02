@@ -17,9 +17,9 @@ class Project:
             config["current_folder"]
         )
 
-    def add(self, path: str) -> None:
+    def add(self, path: str) -> Tuple[bool, Optional[str]]:
         """Add a new folder structure to Current."""
-        self.folder_manager.add_folder(path, self.folder_manager.current_folder)
+        return self.folder_manager.add_folder(path, self.folder_manager.current_folder)
 
     def finish(self, path: str) -> Tuple[bool, Optional[str]]:
         """Move folder from Current to Finished."""
