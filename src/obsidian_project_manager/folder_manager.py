@@ -17,7 +17,9 @@ class FolderManager:
     
     def _normalize_path(self, path: str) -> List[str]:
         """Convert user-provided path to list of folder names without indices."""
-        return [self.file_manager.strip_index(part) for part in path.split("/")]
+        # Remove leading and trailing slashes, then split
+        clean_path = path.strip("/")
+        return [self.file_manager.strip_index(part) for part in clean_path.split("/") if part]
     
     def _build_indexed_path(self, base: Path, folders: List[str]) -> Path:
         """Build a path with proper indices."""
