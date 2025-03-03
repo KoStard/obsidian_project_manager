@@ -86,15 +86,24 @@ class FolderManager:
         return True, None
     
     def _reindex_folders(self, folder: Path) -> None:
-        """Re-index all folders in a directory."""
+        """Re-index all folders in a directory while maintaining order."""
         if not folder.exists():
             return
             
-        folders = [(self.file_manager.strip_index(item.name), item) 
-                  for item in folder.iterdir() if item.is_dir()]
-        folders.sort()  # Sort by name without indices
+        def sort_key(x):
+            parts = x.name.split(" - ", 1)
+            try:
+                return (int(parts[0]), parts[1] if len(parts) > 1 else "")
+            except ValueError:
+                return (float('inf'), x.name)  # Put invalid prefixes at the end
+            
+        # Get current order of folders
+        folders = [item for item in folder.iterdir() if item.is_dir()]
+        folders.sort(key=sort_key)
         
-        for i, (name, path) in enumerate(folders, 1):
+        # Reindex folders while maintaining order
+        for i, path in enumerate(folders, 1):
+            name = self.file_manager.strip_index(path.name)
             new_name = self.file_manager.add_index(name, i)
             if path.name != new_name:
                 path.rename(folder / new_name)
@@ -109,14 +118,17 @@ class FolderManager:
         parent_path = self._build_indexed_path(self.parent_dir, folders[:-1])
         target_name = folders[-1]
         
+        def sort_key(x):
+            parts = x.name.split(" - ", 1)
+            try:
+                return (int(parts[0]), parts[1] if len(parts) > 1 else "")
+            except ValueError:
+                return (float('inf'), x.name)  # Put invalid prefixes at the end
+        
         # Get all folders in parent
-        folders_in_parent = []
-        for item in parent_path.iterdir():
-            if item.is_dir():
-                name = self.file_manager.strip_index(item.name)
-                current_index = int(item.name.split(" - ")[0])
-                folders_in_parent.append((name, item, current_index))
-                
+        folders_in_parent = [item for item in parent_path.iterdir() if item.is_dir()]
+        folders_in_parent.sort(key=sort_key)
+        
         folder_count = len(folders_in_parent)
         
         # Validate new index
@@ -126,10 +138,10 @@ class FolderManager:
         # Find the target folder
         target_folder = None
         target_current_index = None
-        for name, path, idx in folders_in_parent:
-            if name == target_name:
-                target_folder = path
-                target_current_index = idx
+        for i, folder in enumerate(folders_in_parent, 1):
+            if self.file_manager.strip_index(folder.name) == target_name:
+                target_folder = folder
+                target_current_index = i
                 break
                 
         if not target_folder:
@@ -138,27 +150,22 @@ class FolderManager:
         # If index isn't changing, nothing to do
         if target_current_index == new_index:
             return True, None
-            
-        # Sort folders by their current indices
-        folders_in_parent.sort(key=lambda x: x[2])
         
-        # Remove target from the list
-        folders_in_parent = [(name, path, idx) for name, path, idx in folders_in_parent 
-                            if name != target_name]
-        
-        # Insert target at the new position
-        folders_in_parent.insert(new_index - 1, (target_name, target_folder, target_current_index))
+        # Remove target from the list and insert at the new position
+        folders_in_parent.remove(target_folder)
+        folders_in_parent.insert(new_index - 1, target_folder)
         
         # Rename all folders with new indices
-        for i, (name, path, _) in enumerate(folders_in_parent, 1):
+        for i, folder in enumerate(folders_in_parent, 1):
+            name = self.file_manager.strip_index(folder.name)
             new_name = self.file_manager.add_index(name, i)
-            if path.name != new_name:
-                path.rename(parent_path / new_name)
+            if folder.name != new_name:
+                folder.rename(parent_path / new_name)
                 
         return True, None
     
     def sync(self) -> Tuple[bool, List[str]]:
-        """Sync project structure, fix indices, and check for conflicts."""
+        """Sync project structure, fix indices, and check for conflicts while maintaining order."""
         warnings = []
         
         # Check for path+filename conflicts between finished and current
@@ -178,7 +185,7 @@ class FolderManager:
         warnings.extend(finished_conflicts)
         warnings.extend(current_conflicts)
         
-        # Fix indices in both states
+        # Fix indices while maintaining order
         self._fix_indices_recursive(self.finished_folder)
         self._fix_indices_recursive(self.current_folder)
         
@@ -231,11 +238,10 @@ class FolderManager:
         return conflicts
     
     def _fix_indices_recursive(self, path: Path) -> None:
-        """Recursively fix indices in all folders."""
+        """Recursively fix indices in all folders while maintaining order."""
         if not path.exists():
             return
             
-        # Fix indices in current directory
         self._reindex_folders(path)
         
         # Recursively fix indices in subdirectories
