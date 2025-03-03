@@ -3,3 +3,4 @@ Many issues with this implementation
 3. add fuzzy search, key navigation
 4. windows path separators not working (`\`)
 6. ignore if the user has the root folders in the path
+7. when no command, doesn't show a warning
