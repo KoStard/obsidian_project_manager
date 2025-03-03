@@ -1,5 +1,4 @@
 import argparse
-from typing import List
 from .config import ConfigManager
 from .project import Project
 
@@ -15,7 +14,7 @@ def configure_parser(parser: argparse.ArgumentParser) -> None:
     projects_subparsers = projects_parser.add_subparsers(dest="action")
     
     projects_subparsers.add_parser("list")
-    add_parser = projects_subparsers.add_parser("add")
+    projects_subparsers.add_parser("add")
     delete_parser = projects_subparsers.add_parser("delete")
     delete_parser.add_argument("alias")
 
@@ -33,7 +32,7 @@ def configure_parser(parser: argparse.ArgumentParser) -> None:
     continue_parser = project_subparsers.add_parser("continue")
     continue_parser.add_argument("path")
     
-    sync_parser = project_subparsers.add_parser("sync")
+    project_subparsers.add_parser("sync")
     
     change_index_parser = project_subparsers.add_parser("change_index")
     change_index_parser.add_argument("path")
